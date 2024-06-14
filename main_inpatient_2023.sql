@@ -6,11 +6,12 @@ WITH unid AS (
     унікального id пацієнта */
     SELECT p.id, 
            c.onset_date,
-           ROW_NUMBER() OVER (PARTITION BY p.id ORDER BY c.onset_date ASC) AS row_num 
+           ROW_NUMBER() OVER (PARTITION BY p.id ORDER BY c.onset_date ASC, c.inserted_at ASC) AS row_num 
       FROM core.dim_med_conditions AS c  
            INNER JOIN core.dim_med_conditions_code_coding AS cc ON c.id = cc.id
            INNER JOIN core.dim_med_patients AS p ON p.id = c.patient_id             
-     WHERE cc.kwd_system = 'eHealth/ICPC2/condition_codes' AND cc.code IN ('K86', 'K87') AND p.is_current = 'Y'
+     WHERE cc.kwd_system = 'eHealth/ICPC2/condition_codes' AND cc.code IN ('K86', 'K87') AND c.verification_status = 'confirmed' 
+           AND p.is_current = 'Y'
            AND cc.is_current = 'Y' AND c.is_current = 'Y' AND (p.status = 'active' OR EXTRACT(YEAR FROM p.death_date) > 2022)  
            AND EXTRACT(YEAR FROM c.onset_date) < 2024
     )
