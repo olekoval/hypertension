@@ -1,4 +1,4 @@
-SELECT *
+SELECT edrpou, patient_id, adrg, principal_diagnosis
   FROM (SELECT edrpou, patient_id, starts, adrg, principal_diagnosis  
 		  FROM analytics.rds_pmg_events_2023 AS e
 	           JOIN analytics.rds_pmg_events_checks_2023 ch ON ch.id = e.id
